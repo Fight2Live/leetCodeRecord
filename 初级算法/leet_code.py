@@ -167,16 +167,145 @@ def position_zone(row, column):
         elif column <= 6: return 8
         else: return 9
 
+
+def isPalindrome(s : str):
+    """
+    验证回文串
+    :param s:
+    :return:
+    """
+    temp = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    result = ''
+    for i in s:
+        if i in temp:
+            result += i
+
+    result = result.lower()
+    print(result)
+    return result == result[::-1]
+
+def myAtoi(s: str) -> int:
+    """
+    atoi
+    字符串转换整数
+    :param s:
+    :return:
+    """
+    temp = '0123456789'
+    sym_t = '+-'
+    symbol_flag = -1  # 符号位，1-正数，0-负数
+    start_flag = 0   # 扫描到了数字后，开始构造整数。符号位（若存在）与首位数字相连
+    result = 0
+    max_num = 2 ** 31 -1
+    exceed_flag = 0  # 1-超出长度
+
+    for i in s:
+
+        if i in sym_t and start_flag == 0:
+            # 未开始构造整数时，确定符号，符号只取第一个读到的正负号
+            if symbol_flag != -1:break
+            if '-' == i:
+                symbol_flag = 0
+            else:
+                symbol_flag = 1
+            start_flag = 1
+            continue
+
+        if i in temp:
+            start_flag = 1
+            result = result * 10 + int(i)
+            # 判断是否长度超过限制：
+            if result > max_num:
+                result = max_num
+                exceed_flag = 1
+                break
+            continue
+
+        elif i not in temp and start_flag == 1:
+            # 开始构造整数后，遍历到非数字字符串，跳出
+            break
+
+        if i != ' ' or (i != ' ' and start_flag == 0):
+            break
+
+    if symbol_flag == 0:
+        result *= -1
+        if exceed_flag == 1:
+            result -= 1
+
+    return result
+
+
+def strStr(haystack: str, needle: str) -> int:
+    """
+    strStr()
+    :param haystack:
+    :param needle:
+    :return:
+    """
+    index = -1
+    if needle == "":
+        return 0
+    needle_size = len(needle)
+    for i in range(len(haystack)):
+        if haystack[i : i+needle_size] == needle:
+            index = i
+            break
+    haystack.find(needle)
+
+    return index
+
+def countAndSay(n: int) -> str:
+    """
+    外观数列
+    :param n:
+    :return:
+    """
+    result_num = init_num = '1'
+
+    while n > 1:
+        result_num = ''
+        size = len(init_num)
+        cur_num = init_num[0]
+        cur_count = 0
+        for i in range(size):
+            if cur_num == init_num[i]:
+                cur_count += 1
+            else:
+                result_num += (str(cur_count) + cur_num)
+                cur_num = init_num[i]
+                cur_count = 1
+        result_num += (str(cur_count) + cur_num)
+        init_num = result_num
+        n -= 1
+
+    return result_num
+
+def longestCommonPrefix(strs: list) -> str:
+    """
+    编写一个函数来查找字符串数组中的最长公共前缀。
+    如果不存在公共前缀，返回空字符串 ""。
+    :param strs:
+    :return:
+    """
+    common_str = strs[0]
+    while len(common_str) > 0:
+        check_flag = 1  # 0-不是公共子序列，1-是
+        for s in strs[1:]:
+            if s.find(common_str) != 0:
+                check_flag = 0
+                break
+        if check_flag == 1:
+            return common_str
+        common_str = common_str[:-1]
+    return ""
+
+
 if __name__ == '__main__':
 
-    t = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
-    t=[[1,2,3],[4,5,6],[7,8,9]]
-    print(t)
-    start = time.time()
-    rotate(t)
-    print(f'反转结果为：{t}')
-    print(f'实际结果是：{[[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]}')
-    print(f'共花费：{time.time() - start}')
+    print(longestCommonPrefix(["flower","flow","flight"]))
+    print(longestCommonPrefix(["dog","racecar","car"]))
+
 
 
 
