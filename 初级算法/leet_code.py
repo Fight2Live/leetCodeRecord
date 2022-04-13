@@ -1,5 +1,7 @@
 
 import time
+from functools import wraps
+
 
 """
 删除排序数组中的重复项
@@ -19,8 +21,6 @@ def removeDuplicates(nums):
     news = nums[:left+1]
     print(f'\n原地去除数据后的数组：{nums}')
     print(f'截取后：{news}')
-
-
 
 
 """
@@ -84,7 +84,6 @@ def isValidSudoku(board: list) -> bool:
     return True
 
 
-
 def rotate(matrix: list) -> None:
     """
     Do not return anything, modify matrix in-place instead.
@@ -113,7 +112,6 @@ def rotate(matrix: list) -> None:
             change_matrix(matrix, cur_width - 1, rotate_count, 1, x, y, matrix[x][y])
 
 
-
 def change_matrix(matrix: list, size, rotate_count, cur_count, x, y, temp_data) :
     """
     顺时针旋转数组
@@ -138,7 +136,6 @@ def change_matrix(matrix: list, size, rotate_count, cur_count, x, y, temp_data) 
     change_matrix(matrix, size, rotate_count, cur_count, new_x, new_y, inplaced_data)
 
 
-
 def set_map_temp(num, temp_map, index):
     if num in temp_map:
         if index in temp_map[num]:
@@ -151,6 +148,7 @@ def set_map_temp(num, temp_map, index):
         temp_map[num] = {index: 1}
 
     return True
+
 
 def position_zone(row, column):
     row, column = row+1, column+1
@@ -183,6 +181,7 @@ def isPalindrome(s : str):
     result = result.lower()
     print(result)
     return result == result[::-1]
+
 
 def myAtoi(s: str) -> int:
     """
@@ -255,6 +254,7 @@ def strStr(haystack: str, needle: str) -> int:
 
     return index
 
+
 def countAndSay(n: int) -> str:
     """
     外观数列
@@ -281,6 +281,7 @@ def countAndSay(n: int) -> str:
 
     return result_num
 
+
 def longestCommonPrefix(strs: list) -> str:
     """
     编写一个函数来查找字符串数组中的最长公共前缀。
@@ -301,11 +302,136 @@ def longestCommonPrefix(strs: list) -> str:
     return ""
 
 
+def climbStairs(n: int) -> int:
+    """
+    爬楼梯
+    假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
+    每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+    """
+    res = 0    # 能到达楼顶的序列[ {sum, detail:[1, 2, 1, 2, ]},  ]
+
+    return recursionClimb(n , 1, 1)
+
+    temps = {"sum": 0, "detail": []}
+    recursionClimb(temps, n, res)
+    # print(res)
+    print(f'一共{res}种结果')
+    return res
+
+def recursionClimb(single, n, res, a, b):
+    if n <= 1:
+        return b
+    return recursionClimb(n-1, b, a+b)
+    step = [1, 2]
+    for cur_step in step:
+        if cur_step + single['sum'] < n:
+            temps = {"sum": single['sum'], "detail": single['detail'].copy()}
+            temps['sum'] += cur_step
+            temps["detail"].append(cur_step)
+            # print(cur_step, temps)
+            recursionClimb(temps, n, res)
+        elif cur_step + single['sum'] == n:
+            # print(cur_step, single)
+            # single['sum'] += cur_step
+            # single["detail"].append(cur_step)
+            # res.append(single)
+            res += 1
+
+class leetCode:
+    def rob(self, nums: list):
+        """
+        你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，
+        如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。给定一个代表每个房屋存放金额的非负整数数组，计算你不触动警报装置的情况
+        下 ，一夜之内能够偷窃到的最高金额。
+
+        示例 1：
+        输入：[1,2,3,1]
+        输出：4
+        解释：偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
+        偷窃到的最高金额 = 1 + 3 = 4 。
+
+        示例 2：
+        输入：[2,7,9,3,1]
+        输出：12
+        解释：偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
+        偷窃到的最高金额 = 2 + 9 + 1 = 12 。
+        """
+        db = [[nums[0], 0],]    # db[i][]表示第i个屋子偷（0）或者不偷（1）时的最大金额
+        for i in range(1, len(nums)):
+            db.append([max(db[i-1][1]+nums[i], db[i-1][0]), db[i-1][0]])
+
+        return max(db[-1])
+
+    def maxProfit(self, prices: list) -> int:
+        """
+        给定一个数组 prices ，它的第i个元素prices[i] 表示一支给定股票第 i 天的价格。
+        你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。
+        返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+
+        示例 1：
+        输入：[7,1,5,3,6,4]
+        输出：5
+        解释：在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+             注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
+
+        示例 2：
+        输入：prices = [7,6,4,3,1]
+        输出：0
+        解释：在这种情况下, 没有交易完成, 所以最大利润为 0。
+        """
+        """
+        卖出：当前手上有股票，即之前买入的，这时利润是差价
+        不卖：当前手上没有股票，又或者之前买入的，没有股票时利润为0，有股票时利润为
+        """
+
+    def test(self, n:int, goods:list):
+        """
+        db[i] = [{'balance', 'satis', 'main'}, ]
+        分买入和不买入两种状态
+        但不管是否买入，都要先判断余额是否满足，主附件要求是否满足
+        买入时是在之前买入的情况下买入，还是在之前不买入的情况下买入
+        不买入分两种，一种是继承上一个物品的买入，一种是继承上一个物品的不买入
+        :return:
+        """
+        db = [[{'balance':n, 'satis':0, 'main':[]}, {'balance':n, 'satis':0, 'main':[]}]]
+        for i in range(len(goods)):
+            good = goods[i]
+            temp1 = db[i-1][0].copy()
+            temp2 = db[i-1][1].copy()
+            db.append([{}])
+
+            # 买入
+            after_buy = {}
+            after_no_buy = {}
+
+            ## 通关判断满意度来决定是否在之前买入的基础下
+            if db[i - 1][0]['satis'] < db[i - 1][1]['satis']:
+                if db[i-1][0]['balance'] <= good[0] and (good[2] == 0 or good[2] in db[i-1][0]['main']):
+                    db[i][0]['balance'] = db[i - 1][0]['balance'] - good[0]
+                    db[i][0]['satis'] = db[i - 1][0]['satis'] + (good[0] * good[1])
+                    db[i][0]['main'] = db[i - 1][0]['main']
+                    if good[2] == 0:
+                        db[i][0]['main'].append(i+1)
+                else:
+
+            # 不买入
+            if db[i-1][1]['balance'] <= good[0] and (good[2] == 0 or good[2] in db[i-1][1]['main']):
+                if temp1['satis'] < temp2['satis']:
+                    db[i].append(temp2)
+                else:
+                    db[i].append(temp1)
+            else:
+                db[i].append(temp2)
+
+        return db[-1]
+
 if __name__ == '__main__':
+    lc = leetCode()
 
-    print(longestCommonPrefix(["flower","flow","flight"]))
-    print(longestCommonPrefix(["dog","racecar","car"]))
-
+    t1 = [[800,2,0], [400,5,1], [300,5,1], [400,3,0],[500,2,0]]
+    print(lc.test(1000, t1))
+    t2 = [2,7,9,3,1]
+    print(lc.rob(t2))
 
 
 
